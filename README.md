@@ -188,6 +188,45 @@ sudo systemctl restart storyphone.service
 
 Finally, reboot once and confirm the LEDs blink and the phone works without you logging in.
 
+## A Note on Prompt Audio Files and Recording Names
+
+Recordings are always saved as `Prompt<N>_Story<XXX>.wav`, where:
+
+- `<N>` is the prompt's **position** in the list, starting at 1. It is *not* taken from the prompt's file name.
+- `<XXX>` is a three-digit story counter that counts up separately for each prompt (`001`, `002`, `003`, ...).
+
+When the program starts, it collects every `.wav` file in `prompts/`, sorts them alphabetically by file name, and numbers them 1, 2, 3, and so on. That number is what ends up in the recording's name. Because the name comes from the position, your prompt files can be called anything you like, and the recordings will still be named `Prompt1_...`, `Prompt2_...`.
+
+For example, if `prompts/` contains these files:
+
+- `Childhood.wav`
+- `Favorite_Place.wav`
+- `Advice.wav`
+
+When the files are loaded they are sorted alphabetically, so `Advice.wav` will be associated with the `Prompt1_StoryXXX.wav` recordings, `Childhood.wav` with `Prompt2_StoryXXX.wav`, and `Favorite_Place.wav` with `Prompt3_StoryXXX.wav`:
+
+| Sorted position | Prompt file | Recordings saved as |
+|-----------------|-------------|---------------------|
+| 1 | `Advice.wav` | `Prompt1_Story001.wav`, ... |
+| 2 | `Childhood.wav` | `Prompt2_Story001.wav`, ... |
+| 3 | `Favorite_Place.wav` | `Prompt3_Story001.wav`, ... |
+
+A few things to keep in mind:
+
+- **Keep a record of which prompt is which.** Since the recording names don't contain the prompt's file name, write down which prompt file matches each `Prompt<N>` number before the event. Printing the sorted list is an easy way to check:
+
+  ```bash
+  ls prompts/*.wav
+  ```
+
+- **To control the order, name the files so they sort the way you want.** Names like `Prompt1.wav`, `Prompt2.wav`, `Prompt3.wav` (or `01_Intro.wav`, `02_Childhood.wav`, ...) make the order obvious. Use zero-padded numbers if you have more than nine prompts, because `Prompt10.wav` sorts before `Prompt2.wav`.
+- **Don't add, remove or rename prompt files once recording has started.** Doing so can change the sorted positions, so the same `Prompt<N>` number would refer to a different prompt, and the counters in `state.json` would no longer line up with the right prompts. If you need to change the prompts, finish or back up your current recordings first, then delete `state.json` to start numbering over.
+- **Restart after changing prompts.** The list of prompts is read once when the program starts, so restart it (or the service) after making changes:
+
+  ```bash
+  sudo systemctl restart storyphone.service
+  ```
+
 ## Collecting the recordings
 
 Recordings are saved in the `recordings/` folder inside the project. To copy them to your computer over the local network (no internet needed, just a shared network or an ethernet cable between the two devices):
