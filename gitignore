@@ -1,0 +1,11 @@
+# Collected stories and runtime state
+recordings/
+state.json
+
+# Event-specific prompt audio (add your own to prompts/)
+prompts/*.wav
+
+# Python
+__pycache__/
+*.pyc
+test.wav
